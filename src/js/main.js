@@ -1,9 +1,7 @@
-
-const applicationName = "8thWall-8i"
-const version = "0.1"
-import gsap from "gsap"
+// import gsap from "gsap"
 import postVert from './assets/glsl/postScene.vert'
 import postFrag from './assets/glsl/postScene.frag'
+import GpuParticleManager from "./gpuParticleManager"
 const SimplexNoise = require('simplex-noise')
 const simplex = new SimplexNoise(Math.random)
 let theScene = null
@@ -21,7 +19,6 @@ let rotatePosition
 let recordedDetail = null
 const clock = new THREE.Clock()
 let pointLight = null
-
 const EightIPipelineModule = () => {
 
     const initXrScene = ({scene, camera}) => {
@@ -54,7 +51,6 @@ const EightIPipelineModule = () => {
 
         maskScene.add(maskBox)
 
-        var aspect = window.innerWidth / window.innerHeight;
         postCamera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 0.1, 2 );
         postCamera.position.set(0,0,1)
         maskRenderTarget = new THREE.WebGLRenderTarget(window.innerWidth,window.innerHeight)
@@ -76,9 +72,10 @@ const EightIPipelineModule = () => {
             postScreenMat
         ))
 
-        // Update()
 
     }
+
+
     const showTarget = ({detail}) => {
 
         if (detail.name === 'test_image_target_blue') {
@@ -93,16 +90,14 @@ const EightIPipelineModule = () => {
             rotateBoxGroup.visible = true
         }
     }
-    // const Update =()=>{
-    //
-    //     requestAnimationFrame(Update)
-    // }
+
+
 
     // Hides the image frame when the target is no longer detected.
     const hideTarget = ({detail}) => {
         if (detail.name === 'test_image_target_blue') {
-            // maskBox.visible = false
-            // animateBox.visible = false
+            maskBox.visible = false
+            animateBox.visible = false
         }
     }
 
@@ -114,9 +109,11 @@ const EightIPipelineModule = () => {
         }
     }
 
+
+
     return {
         // Pipeline modules need a name. It can be whatever you want but must be unique within your app.
-        name: '8thWall-8i',
+        name: '8thWall-MaskStudy',
 
         onStart: ({canvas, canvasWidth, canvasHeight}) => {
             const {scene, camera, renderer} = XR8.Threejs.xrScene()
@@ -141,10 +138,10 @@ const EightIPipelineModule = () => {
         // onUpdate is called once per camera loop prior to render.
         onUpdate: () => {
 
-            //8i Logic
-            theCamera.updateMatrixWorld();
-            theCamera.matrixWorldInverse.getInverse(theCamera.matrixWorld);
+            theCamera.updateMatrixWorld()
+            theCamera.matrixWorldInverse.getInverse(theCamera.matrixWorld)
             theRenderer.clear(true,true,true)
+
 
 
             if(recordedDetail != null)
@@ -152,7 +149,7 @@ const EightIPipelineModule = () => {
                 let step = Math.PI*2 / (rotateBoxs.length)
                 let count = 0
                 rotateBoxs.forEach((v)=>{
-                    console.log(count)
+                    // console.log(count)
                     v.position.copy(recordedDetail.position)
                     rotatePosition.set(Math.cos(count*step+clock.getElapsedTime())*recordedDetail.scale, 0,  Math.sin(count*step+clock.getElapsedTime())*recordedDetail.scale)
                     v.position.add(rotatePosition)
