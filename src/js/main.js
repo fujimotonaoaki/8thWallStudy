@@ -180,6 +180,8 @@ const EightIPipelineModule = () => {
     }
 }
 
+
+
 const onxrloaded = () => {
     // XR8.xrController().configure({disableWorldTracking: true})
     XR8.addCameraPipelineModules([  // Add camera pipeline modules.
