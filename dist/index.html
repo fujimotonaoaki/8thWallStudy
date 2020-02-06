@@ -8,7 +8,90 @@
   <title>8th Wall Web: three.js image targets</title>
   <link rel="stylesheet" type="text/css" href="index.css">
 
+  <script id="postFrag" type="x-shader/x-fragment">
+    varying vec2 vUv;
 
+    uniform float time;
+    uniform sampler2D source00;
+
+    void main()	{
+
+      vec4 sourceColor = texture2D( source00, vUv );
+      if(distance(sourceColor.xyz, vec3(0.0, 252.0/255.0, 0.0)) < 0.2) sourceColor.a = 0.0;
+
+      gl_FragColor = sourceColor;//vec4( vUv.x,1,vUv.y,1);
+
+    }
+  </script>
+
+  <script id="postVert" type="x-shader/x-fragment">
+    varying vec2 vUv;
+
+    void main()	{
+
+      vUv = uv;
+
+      gl_Position = vec4( position, 1.0 );
+
+    }
+  </script>
+
+  <script id="billboardParticleVert" type="x-shader/x-vertex">
+    uniform float time;
+    uniform vec3 customCameraPosition;
+    varying vec2 vUv;
+    varying float vScale;
+
+    void main() {
+      vec3 look = normalize( customCameraPosition - position );
+
+      if( length( look ) == 0.0 ) {
+        look.z = 1.0;
+      }
+
+      vec3 up = vec3( 0.0, 1.0, 0.0 );
+      vec3 right = normalize( cross( up, look ) );
+      up = normalize( cross( look, right ) );
+
+
+      mat4 transformMatrix;
+
+      transformMatrix[0][0] = right.x;
+      transformMatrix[0][1] = right.y;
+      transformMatrix[0][2] = right.z;
+
+      transformMatrix[1][0] = up.x;
+      transformMatrix[1][1] = up.y;
+      transformMatrix[1][2] = up.z;
+
+      transformMatrix[2][0] = look.x;
+      transformMatrix[2][1] = look.y;
+      transformMatrix[2][2] = look.z;
+      vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+//      vec3 trTime = vec3(translate.x + time,translate.y + time,translate.z + time);
+//      float scale =  sin( trTime.x * 2.1 ) + sin( trTime.y * 3.2 ) + sin( trTime.z * 4.3 );
+//      vScale = scale;
+//      scale = scale * 10.0 + 10.0;
+//      mvPosition.xyz += position * scale;
+      vUv = uv;
+      gl_Position = projectionMatrix * mvPosition;
+
+//      projectionMatrix * (modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + vec4(position.x, position.y, 0.0, 0.0));
+
+    }
+  </script>
+  <script id="billboardParticleFrag" type="x-shader/x-fragment">
+
+
+    void main() {
+//      vec4 diffuseColor = texture2D( map, vUv );
+      gl_FragColor = vec4( 0.9,0.7,1., 1.);
+
+//      if ( diffuseColor.w < 0.5 ) discard;
+    }
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.1.1/gsap.min.js"></script>s
   <!-- THREE.js must be supplied -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js"></script>
 
@@ -24,12 +107,11 @@
 
     <!-- 8thWall Web - Replace the app key here with your own app key -->
     <script async src="//apps.8thwall.com/xrweb?appKey=sSN2D1I6ReLeVnqcuk0xmj4IhigeVdCOecyR4UP57Zva0u8Zv2qmKWlJj8pQCHz4PljayM"></script>
-  <script type="text/javascript" src="https://player.8i.com/interface/1.4/eighti.min.js"></script>
-    <!-- client code -->
+
     <script src="js/bundle.js"></script>
 </head>
 
 <body>
-<canvas id="camerafeed"></canvas>
+<!--<canvas id="camerafeed"></canvas>-->
 </body>
 </html>

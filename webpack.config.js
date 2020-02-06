@@ -1,3 +1,4 @@
+'use strict';
 const path = require('path');
 module.exports = {
     // モード値を production に設定すると最適化された状態で、
@@ -19,7 +20,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(png|jpe?g|gif|mp4|glb|css|html)$/i,
+                test: /\.(png|jpe?g|gif|mp4|glb)$/i,
                 loader: 'file-loader',
                 options: {
                     name: '[name].[ext]',
@@ -29,6 +30,16 @@ module.exports = {
                     }
 
                 }
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
+            }, {
+                test: /\.html$/,
+                use: 'html-loader',
             },
             {
                 test: /\.(glsl|vs|fs|vert|frag)$/,

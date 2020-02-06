@@ -11,8 +11,10 @@
     "webpack-cli": "^3.3.10"
   },
   "devDependencies": {
+    "css-loader": "^3.4.2",
     "file-loader": "^5.0.2",
     "gsap": "^3.1.0",
+    "html-loader": "^0.5.5",
     "raw-loader": "^4.0.0",
     "simplex-noise": "^2.4.0",
     "ts-loader": "^6.2.1",
