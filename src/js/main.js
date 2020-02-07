@@ -94,9 +94,6 @@ const EightIPipelineModule = () => {
         particle = new billboardParticle(clock,noise);
         scene.add(particle.mesh);
 
-
-
-
     }
 
 
@@ -112,6 +109,7 @@ const EightIPipelineModule = () => {
             maskBoxB.scale.set(detail.scale, detail.scale*(480/640), detail.scale*0.1)
 
         }
+
         if (detail.name === 'test_image_target_blue' && isTargetA) {
             recordedDetailA = Object.assign({}, detail);
             // console.log("A ", recordedDetailA);
