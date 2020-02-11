@@ -31,7 +31,7 @@ let moveDuration = 2;
 let isTargetA = false;
 
 const EightIPipelineModule = () => {
-
+    console.log('8thwall scene',THREE)
     const initXrScene = ({scene, camera}) => {
         const noise = new simplexNoise();
         camera.near = 0.001;
