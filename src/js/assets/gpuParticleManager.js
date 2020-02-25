@@ -1,7 +1,7 @@
-import computeShaderPosition from './assets/glsl/computeShaderPosition.frag'
-import computeShaderVelocity from './assets/glsl/computeShaderVelocity.frag'
-import particleFragmentShader from './assets/glsl/particleFragmentShader.frag'
-import particleVertexShader from './assets/glsl/particleVertexShader.frag'
+import computeShaderPosition from './glsl/computeShaderPosition.frag'
+import computeShaderVelocity from './glsl/computeShaderVelocity.frag'
+import particleFragmentShader from './glsl/particleFragmentShader.frag'
+import particleVertexShader from './glsl/particleVertexShader.frag'
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer'
 import * as THREE from 'three';
 
