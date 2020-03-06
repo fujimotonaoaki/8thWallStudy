@@ -1,36 +1,36 @@
-import billboardParticle from "./billboardParticle";
-export const imageTargetPipelineModule = () => {
+import videoFile from './img/videoMarker.mp4'
+import marker from './img/marker.png'
+export const imageTargetPipelineModule = (customThreeJsPipeline) => {
 
     let theScene = null
     let theRenderer = null
     let theCamera = null
     let maskBox = null
     let rotateBoxs = []
+    // let characterTextures = [];
     let rotateBoxGroup = null
     let maskScene
     let postScene
     let postCamera
     let maskRenderTarget
     let uniforms
+    let uniforms_video
     let rotatePosition
     let recordedDetail = null
     const clock = new THREE.Clock()
     let pointLight = null
-    let particle
+    let video = null;
+    let effectPlane = null;
+    let isContentsStart = false;
 
-
-    // Populates some object into an XR scene and sets the initial camera position. The scene and
-    // camera come from xr3js, and are only available in the camera loop lifecycle onStart() or later.
     const initXrScene = ({scene, camera}) => {
-        console.log('initXrScene')
-
-        // create the video element
 
         scene.add(new THREE.AmbientLight(0x404040, 5))
-
-        // Set the initial camera position relative to the scene we just laid out. This must be at a
-        // height greater than y=0.
         camera.position.set(0, 3, 0)
+
+        // console.log(marker_effect)
+        const textureLoader = new THREE.TextureLoader();
+
 
         rotatePosition = new THREE.Vector3(0,0,0)
         clock.start()
@@ -49,10 +49,9 @@ export const imageTargetPipelineModule = () => {
             )
             rotateBoxs.push(animateBox)
             rotateBoxGroup.add(animateBox)
-            // maskScene.add(animateBox)
         }
         rotateBoxGroup.visible = false;
-        maskScene.add(rotateBoxGroup)
+        // maskScene.add(rotateBoxGroup)
         pointLight = new THREE.PointLight(0xffffff, 0.8)
         maskScene.add(pointLight)
         maskScene.add(new THREE.AmbientLight(0xffffff,0.8))
@@ -81,29 +80,89 @@ export const imageTargetPipelineModule = () => {
             postScreenMat
         ))
 
-        scene.add(new THREE.AxesHelper(200))
+        // scene.add(new THREE.AxesHelper(200))
 
-        particle = new billboardParticle()
-        console.log(particle)
-        scene.add(particle.getMesh())
+
+
+        video = document.createElement('video')
+        video.src = videoFile
+        video.setAttribute('preload', 'auto')
+        video.setAttribute('loop', '')
+        video.setAttribute('muted', '')
+        video.setAttribute('playsinline', '')
+        video.setAttribute('webkit-playsinline', '')
+
+        const texture = new THREE.VideoTexture(video)
+        texture.minFilter = THREE.LinearFilter
+        texture.magFilter = THREE.LinearFilter
+        texture.format = THREE.RGBFormat
+        texture.crossOrigin = 'anonymous'
+
+
+        uniforms_video = {
+            "time":{value:1.0},
+            "threshold":{value:0.0},
+            "texture": { value: texture },
+            "baseTexture":{value:textureLoader.load(marker)}
+        }
+
+        effectPlane = new THREE.Mesh(
+            new THREE.PlaneBufferGeometry(1,1),
+            new THREE.ShaderMaterial({
+                uniforms:uniforms_video,
+                transparent: true,
+                vertexShader: document.getElementById('videoEffectVert').textContent,
+                fragmentShader:document.getElementById('videoEffectFrag').textContent
+            })
+        )
+        effectPlane.visible = false;
+
+        maskScene.add(effectPlane);
+
+        video.load();
 
     }
 
     // Places content over image target
     const showTarget = ({detail}) => {
-        // When the image target named 'model-target' is detected, show 3D model.
-        // This string must match the name of the image target uploaded to 8th Wall.
 
-        if (detail.name === 'test_image_target_blue') {
+        if(!isContentsStart) return;
+        if (detail.name === 'marker_kanban') {
+
+            // if(isTween == false)
+            // {
+            //     console.log(uniforms_video.threshold.value);
+            //     isTween = true;
+            //     new TWEEN.Tween(uniforms_video.threshold,700)
+            //         .to({value:0.0})
+            //         .easing(TWEEN.Easing.Elastic.Out)
+            //         .onComplete(()=>{
+            //             isTween = false;
+            //         })
+            //         .onUpdate(()=>{
+            //             isTween = true;
+            //             console.log(uniforms_video.threshold.value)
+            //         })
+            //         .start()
+            // }
+
+            uniforms_video.threshold.value = Math.min(uniforms_video.threshold.value + 0.05, 1);
+
             recordedDetail = detail
-            maskBox.position.copy(detail.position)
-            maskBox.quaternion.copy(detail.rotation)
-            maskBox.scale.set(detail.scale, detail.scale*(480/640), detail.scale*0.1)
-            maskBox.visible = true
+
+            effectPlane.position.copy(detail.position)
+            effectPlane.quaternion.copy(detail.rotation)
+            effectPlane.scale.set(detail.scale*(480/640), detail.scale, 1)
+            effectPlane.visible = true
+            video.play()
+
             pointLight.position.copy(detail.position)
             pointLight.quaternion.copy(detail.rotation)
             pointLight.position.add(new THREE.Vector3(0,2,0))
             rotateBoxGroup.visible = true
+
+
+
 
 
         }
@@ -112,16 +171,28 @@ export const imageTargetPipelineModule = () => {
     // Hides the image frame when the target is no longer detected.
     const hideTarget = ({detail}) => {
 
-        if (detail.name === 'test_image_target_blue') {
+        if (detail.name === 'marker_kanban') {
+
+            uniforms_video.threshold.value =  0;
+
             rotateBoxGroup.visible = false
+            effectPlane.visible = false;
+            video.pause();
+
+            isContentsStart = false;
+
+
             // animateBox.visible = false
         }
     }
 
     // Grab a handle to the threejs scene and set the camera position on pipeline startup.
     const onStart = ({canvas}) => {
-        const {scene, camera, renderer} = XR8.Threejs.xrScene()
+        const {scene, camera, renderer} = customThreeJsPipeline.xrScene()
 
+        canvas.addEventListener('touchstart', ()=>{
+            isContentsStart = !isContentsStart;
+        }, true)
         theScene = scene
         theRenderer = renderer
         theRenderer.context.getExtension('WEBGL_debug_renderer_info')
@@ -137,22 +208,14 @@ export const imageTargetPipelineModule = () => {
     }
 
     return {
-        // Camera pipeline modules need a name. It can be whatever you want but must be
-        // unique within your app.
         name: 'threejs-flyer',
-
-        // onStart is called once when the camera feed begins. In this case, we need to wait for the
-        // XR8.Threejs scene to be ready before we can access it to add content. It was created in
-        // XR8.Threejs.pipelineModule()'s onStart method.
         onStart,
 
         onUpdate: () => {
             theCamera.updateMatrixWorld()
             theCamera.matrixWorldInverse.getInverse(theCamera.matrixWorld)
             theRenderer.clear(true,true,true)
-            particle.update()
-
-
+            uniforms_video.time.value = clock.getElapsedTime();
             if(recordedDetail != null)
             {
                 let step = Math.PI*2 / (rotateBoxs.length)
@@ -179,7 +242,6 @@ export const imageTargetPipelineModule = () => {
             theRenderer.render(maskScene, theCamera)
             theRenderer.setRenderTarget(null)
             theRenderer.state.reset()
-            theRenderer.render(theScene, theCamera)
             theRenderer.render(postScene,postCamera)
         },
 
