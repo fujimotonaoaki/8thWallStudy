@@ -53,10 +53,8 @@ const placegroundScenePipelineModule = () => {
         scene.add(new THREE.AmbientLight( 0x404040, 5 ))  // Add soft white light to the scene.
 
         /// kanban model
-        {
-            let geometry = new THREE.BoxGeometry( 1, 1, 1 );
-            let material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-        }
+        let geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        let material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
         const kanbanModel = new THREE.Mesh( geometry, material );
         scene.add( kanbanModel );
         kanbanModel.visible = false;
