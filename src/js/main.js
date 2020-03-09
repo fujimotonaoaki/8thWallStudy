@@ -7,13 +7,6 @@ let mapScene;
 const crossFadeSlider = {value:0.0};
 const placegroundScenePipelineModule = () => {
 
-    /// kanban model
-    {
-        let geometry = new THREE.BoxGeometry( 1, 1, 1 );
-        let material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-    }
-    const kanbanModel = new THREE.Mesh( geometry, material );
-
     /// tree model
     const modelFile = 'tree.glb'                                 // 3D model to spawn at tap
     const startScale = new THREE.Vector3(0.0001, 0.0001, 0.0001) // Initial scale value for our model
@@ -58,6 +51,16 @@ const placegroundScenePipelineModule = () => {
         scene.add(surface)
 
         scene.add(new THREE.AmbientLight( 0x404040, 5 ))  // Add soft white light to the scene.
+
+        /// kanban model
+        {
+            let geometry = new THREE.BoxGeometry( 1, 1, 1 );
+            let material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+        }
+        const kanbanModel = new THREE.Mesh( geometry, material );
+        scene.add( kanbanModel );
+        kanbanModel.visible = false;
+    
 
         // Set the initial camera position relative to the scene we just laid out. This must be at a
         // height greater than y=0.
