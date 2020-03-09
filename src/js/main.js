@@ -57,7 +57,7 @@ const placegroundScenePipelineModule = () => {
         let material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
         const kanbanModel = new THREE.Mesh( geometry, material );
         scene.add( kanbanModel );
-        kanbanModel.visible = false;
+        //kanbanModel.visible = false;
     
 
         // Set the initial camera position relative to the scene we just laid out. This must be at a
@@ -72,7 +72,7 @@ const placegroundScenePipelineModule = () => {
         // This string must match the name of the image target uploaded to 8th Wall.
         if (detail.name === 'marker_kanban') {
             console.log( "showTarget");
-            
+
             kanbanModel.position.copy(detail.position)
             kanbanModel.quaternion.copy(detail.rotation)
             kanbanModel.scale.set(detail.scale, detail.scale, detail.scale)
