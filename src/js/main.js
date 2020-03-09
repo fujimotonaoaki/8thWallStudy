@@ -67,9 +67,12 @@ const placegroundScenePipelineModule = () => {
 
     // Places content over image target
     const showTarget = ({detail}) => {
+        
         // When the image target named 'model-target' is detected, show 3D model.
         // This string must match the name of the image target uploaded to 8th Wall.
         if (detail.name === 'marker_kanban') {
+            console.log( "showTarget");
+            
             kanbanModel.position.copy(detail.position)
             kanbanModel.quaternion.copy(detail.rotation)
             kanbanModel.scale.set(detail.scale, detail.scale, detail.scale)
