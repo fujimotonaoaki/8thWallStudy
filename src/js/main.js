@@ -6,6 +6,15 @@ let isMapScene = false;
 let mapScene;
 const crossFadeSlider = {value:0.0};
 const placegroundScenePipelineModule = () => {
+
+    /// kanban model
+    {
+        let geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        let material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    }
+    const kanbanModel = new THREE.Mesh( geometry, material );
+
+    /// tree model
     const modelFile = 'tree.glb'                                 // 3D model to spawn at tap
     const startScale = new THREE.Vector3(0.0001, 0.0001, 0.0001) // Initial scale value for our model
     const endScale = new THREE.Vector3(0.002, 0.002, 0.002)      // Ending scale value for our model
@@ -53,6 +62,27 @@ const placegroundScenePipelineModule = () => {
         // Set the initial camera position relative to the scene we just laid out. This must be at a
         // height greater than y=0.
         camera.position.set(0, 3, 0)
+    }
+
+    // Places content over image target
+    const showTarget = ({detail}) => {
+        // When the image target named 'model-target' is detected, show 3D model.
+        // This string must match the name of the image target uploaded to 8th Wall.
+        if (detail.name === 'marker_kanban') {
+            kanbanModel.position.copy(detail.position)
+            kanbanModel.quaternion.copy(detail.rotation)
+            kanbanModel.scale.set(detail.scale, detail.scale, detail.scale)
+            kanbanModel.visible = true
+        }
+
+    }
+
+    // Hides the image frame when the target is no longer detected.
+    const hideTarget = ({detail}) => {
+        if (detail.name === 'marker_kanban') {
+            kanbanModel.visible = false
+        }
+
     }
 
     const animateIn = (model, pointX, pointZ, yDegrees) => {
@@ -175,6 +205,12 @@ const placegroundScenePipelineModule = () => {
             if(isUpdateFadeScene)theRenderer.render(fadeScene,orthoCamera);
 
         },
+
+        listeners: [
+            {event: 'reality.imagefound', process: showTarget},
+            {event: 'reality.imageupdated', process: showTarget},
+            {event: 'reality.imagelost', process: hideTarget},
+          ],
     }
 }
 
