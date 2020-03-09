@@ -3,7 +3,6 @@ import {imageTargetPipelineModule} from './assets/imagetarget'
 import MapScene from "./assets/mapScene";
 const myThreejsModule = customThreejsPipelineModule();
 
-
 const onxrloaded = () => {
     XR8.addCameraPipelineModules([  // Add camera pipeline modules.
         // Existing pipeline modules.
