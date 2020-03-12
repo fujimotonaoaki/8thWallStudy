@@ -26,7 +26,7 @@ module.exports = {
                     name: '[name].[ext]',
                     outputPath : 'assets/',
                     publicPath : function(path){
-                        return '../' + path;
+                        return './js/assets/' + path;
                     }
 
                 }
